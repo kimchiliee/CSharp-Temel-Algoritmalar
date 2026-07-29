@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace KelimeEslemeOyunu
 {
     public partial class Form1 : Form
     {
-        // Kelimeleri anahtar-değer (İngilizce-Türkçe) şeklinde tutmak için Dictionary kullanıyoruz.
-        // Bu sektörde çok sık kullanılan profesyonel bir veri yapısıdır.
         Dictionary<string, string> kelimeler = new Dictionary<string, string>();
 
         public Form1()
@@ -16,78 +13,57 @@ namespace KelimeEslemeOyunu
             InitializeComponent();
         }
 
-        // Tasarım kodunda tanımladığın Load/Yükle butonu
-        private void btnYukle_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-            // Yeni oyun başlatıldığında listeleri ve sözlüğü temizle
-            listBoxEng.Items.Clear();
-            listBoxTr.Items.Clear();
-            kelimeler.Clear();
-
-            // Sözlüğe kelime çiftlerimizi ekliyoruz
-            kelimeler.Add("Algorithm", "Algoritma");
-            kelimeler.Add("Database", "Veritabanı");
-            kelimeler.Add("Software", "Yazılım");
-            kelimeler.Add("Network", "Ağ");
-            kelimeler.Add("Developer", "Geliştirici");
-
-            // İngilizce kelimeleri ilk listeye ekliyoruz
-            foreach (var item in kelimeler.Keys)
+            if (!string.IsNullOrWhiteSpace(textBox1.Text) && !string.IsNullOrWhiteSpace(textBox2.Text))
             {
-                listBoxEng.Items.Add(item);
+                string ing = textBox1.Text.Trim(); 
+                string tr = textBox2.Text.Trim();
+
+                kelimeler[ing] = tr;
+
+                listBox1.Items.Add(ing);
+                listBox2.Items.Add(tr);
+
+                textBox1.Clear();
+                textBox2.Clear();
+                textBox1.Focus(); 
             }
-
-            // Türkçe kelimeleri oyunu zorlaştırmak için karıştırarak ikinci listeye ekliyoruz
-            List<string> trKelimeler = kelimeler.Values.ToList();
-            Random rnd = new Random();
-            trKelimeler = trKelimeler.OrderBy(x => rnd.Next()).ToList();
-
-            foreach (var item in trKelimeler)
+            else
             {
-                listBoxTr.Items.Add(item);
+                MessageBox.Show("Lütfen her iki kelime kutusunu da doldurun.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-
-            // Tasarımda buton isimleri boş veya default kalmış, onları da kodla düzeltelim
-            btnYukle.Text = "Yeniden Başlat";
-            btnKontrol.Text = "Kontrol Et";
         }
 
-        // Tasarım kodunda tanımladığın Kontrol butonu
-        private void btnKontrol_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
-            // Kullanıcının iki listeden de seçim yapıp yapmadığını kontrol edelim
-            if (listBoxEng.SelectedItem == null || listBoxTr.SelectedItem == null)
+            if (listBox1.SelectedItem != null && listBox2.SelectedItem != null)
             {
-                MessageBox.Show("Lütfen her iki listeden de bir kelime seçin!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+                string ing = listBox1.SelectedItem.ToString();
+                string tr = listBox2.SelectedItem.ToString();
 
-            string secilenEng = listBoxEng.SelectedItem.ToString();
-            string secilenTr = listBoxTr.SelectedItem.ToString();
-
-            // Sözlükteki İngilizce kelimenin karşılığı, seçilen Türkçe kelimeye eşit mi?
-            if (kelimeler[secilenEng] == secilenTr)
-            {
-                MessageBox.Show("Tebrikler, doğru eşleşme!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                
-                // Doğru bilinen kelimeleri listeden çıkararak oyunu ilerletiyoruz
-                listBoxEng.Items.Remove(secilenEng);
-                listBoxTr.Items.Remove(secilenTr);
-
-                // Oyun bitti mi kontrolü
-                if (listBoxEng.Items.Count == 0)
+                if (kelimeler.ContainsKey(ing) && kelimeler[ing] == tr)
                 {
-                    MessageBox.Show("Tüm kelimeleri eşleştirdiniz! Oyun Bitti.", "Tebrikler");
+                    listBox3.Items.Add(ing + " - " + tr);
+                    
+                    listBox1.Items.Remove(ing);
+                    listBox2.Items.Remove(tr);
+                }
+                else
+                {
+                    MessageBox.Show("Yanlış eşleşme, lütfen tekrar deneyin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
             {
-                MessageBox.Show("Yanlış eşleşme, tekrar deneyin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lütfen eşleştirmek için iki listeden de seçim yapın.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
-        // Tasarım kodunda tetiklenen ancak içi boş olması gereken olaylar (Hata almamak için gereklidir)
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e) { }
-        private void listBox2_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void label1_Click(object sender, EventArgs e) { }
+        private void label2_Click(object sender, EventArgs e) { }
+        private void listBox3_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void listBox4_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void label5_Click(object sender, EventArgs e) { }
     }
 }
